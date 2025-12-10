@@ -25,32 +25,58 @@ if "uploaded_files" not in st.session_state:
     st.session_state.uploaded_files = []
 
 
+def start_new_conversation():
+    """Start a new conversation and reset session state."""
+    st.session_state.conversation_id = create_conversation()
+    st.session_state.messages = []
+    st.session_state.uploaded_files = []
+    st.rerun()
+
+
 def main():
     st.title("📊 Financial Call Transcript RAG Assistant")
     st.markdown("Upload earnings call transcripts (PDFs) and ask questions about management commentary, guidance, margins, and more.")
     
-    # Sidebar for file upload
+    # Create conversation if it doesn't exist
+    if st.session_state.conversation_id is None:
+        st.session_state.conversation_id = create_conversation()
+    
+    # Sidebar for file upload and conversation management
     with st.sidebar:
+        # New conversation button
+        if st.button("🆕 New Conversation", use_container_width=True, type="primary"):
+            start_new_conversation()
+        
+        st.markdown("---")
         st.header("📁 Upload Transcripts")
+        
+        # Show current conversation info
+        if st.session_state.conversation_id:
+            st.caption(f"Conversation ID: {str(st.session_state.conversation_id)[:8]}...")
+        
         uploaded_files = st.file_uploader(
             "Choose PDF files",
             type=["pdf"],
             accept_multiple_files=True,
-            help="Upload one or more earnings call transcript PDFs (max 10MB each)"
+            help="Upload one or more earnings call transcript PDFs (max 10MB each). Files are linked to this conversation."
         )
         
         if uploaded_files:
             new_files = [f for f in uploaded_files if f.name not in st.session_state.uploaded_files]
             
             if new_files:
+                # Ensure we have a conversation_id
+                if st.session_state.conversation_id is None:
+                    st.session_state.conversation_id = create_conversation()
+                
                 with st.spinner("Processing PDFs..."):
                     for file in new_files:
                         try:
                             # Process PDF
                             chunks = process_pdf_file(file)
                             
-                            # Store in vector database
-                            store_document_chunks(chunks)
+                            # Store in vector database (linked to conversation)
+                            store_document_chunks(chunks, st.session_state.conversation_id)
                             
                             st.session_state.uploaded_files.append(file.name)
                             st.success(f"✅ Processed: {file.name} ({len(chunks)} chunks)")
@@ -73,23 +99,23 @@ def main():
     
     # Chat input
     if prompt := st.chat_input("Ask a question about the transcripts..."):
+        # Ensure we have a conversation_id
+        if st.session_state.conversation_id is None:
+            st.session_state.conversation_id = create_conversation()
+        
         # Add user message to chat
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
             st.markdown(prompt)
         
-        # Create conversation if needed
-        if st.session_state.conversation_id is None:
-            st.session_state.conversation_id = create_conversation()
-        
         # Save user message to database
         add_message(st.session_state.conversation_id, "user", prompt)
         
-        # Generate response
+        # Generate response (scoped to this conversation)
         with st.chat_message("assistant"):
             with st.spinner("Thinking..."):
                 try:
-                    response = answer_question(prompt)
+                    response = answer_question(prompt, st.session_state.conversation_id)
                     st.markdown(response)
                     
                     # Add assistant message to chat

@@ -69,6 +69,7 @@ supabase migration new your_migration_name
 ## Migration Files
 
 - `migrations/20240101000000_initial_schema.sql` - Initial schema with tables and indexes
+- `migrations/20240110000000_add_conversation_to_chunks.sql` - Adds conversation_id to document_chunks for conversation isolation
 
 ## Schema Overview
 

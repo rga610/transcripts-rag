@@ -16,11 +16,12 @@ def get_llm():
     )
 
 
-def answer_question(question: str, conversation_history: List[Dict] = None) -> str:
-    """Answer a question using RAG pipeline.
+def answer_question(question: str, conversation_id: str, conversation_history: List[Dict] = None) -> str:
+    """Answer a question using RAG pipeline, scoped to a specific conversation.
     
     Args:
         question: User's question
+        conversation_id: UUID of the conversation (to filter chunks)
         conversation_history: Previous messages in the conversation
     
     Returns:
@@ -30,8 +31,8 @@ def answer_question(question: str, conversation_history: List[Dict] = None) -> s
     embedding_model = get_embedding_model()
     query_embedding = embedding_model.embed_query(question)
     
-    # Retrieve relevant chunks
-    retrieved_chunks = search_similar_chunks(query_embedding)
+    # Retrieve relevant chunks (filtered by conversation)
+    retrieved_chunks = search_similar_chunks(query_embedding, conversation_id)
     
     if not retrieved_chunks:
         return "I couldn't find any relevant information in the uploaded transcripts. Please make sure you've uploaded PDF files first."

@@ -5,8 +5,13 @@ import psycopg2.extras
 from config import TOP_K_RETRIEVAL
 
 
-def store_document_chunks(chunks: List[Dict]):
-    """Store document chunks with embeddings in Supabase."""
+def store_document_chunks(chunks: List[Dict], conversation_id: str):
+    """Store document chunks with embeddings in Supabase, linked to a conversation.
+    
+    Args:
+        chunks: List of chunk dictionaries with embedding, chunk_text, etc.
+        conversation_id: UUID of the conversation these chunks belong to
+    """
     conn = get_postgres_connection()
     cur = conn.cursor()
     
@@ -22,15 +27,16 @@ def store_document_chunks(chunks: List[Dict]):
             
             cur.execute(
                 """
-                INSERT INTO document_chunks (filename, chunk_text, chunk_index, embedding, metadata)
-                VALUES (%s, %s, %s, %s::vector, %s)
+                INSERT INTO document_chunks (filename, chunk_text, chunk_index, embedding, metadata, conversation_id)
+                VALUES (%s, %s, %s, %s::vector, %s, %s)
                 """,
                 (
                     chunk_data["filename"],
                     chunk_data["chunk_text"],
                     chunk_data["chunk_index"],
                     embedding_str,
-                    metadata_json
+                    metadata_json,
+                    conversation_id
                 )
             )
         conn.commit()
@@ -42,8 +48,17 @@ def store_document_chunks(chunks: List[Dict]):
         conn.close()
 
 
-def search_similar_chunks(query_embedding: List[float], top_k: int = TOP_K_RETRIEVAL) -> List[Dict]:
-    """Search for similar chunks using cosine similarity."""
+def search_similar_chunks(query_embedding: List[float], conversation_id: str, top_k: int = TOP_K_RETRIEVAL) -> List[Dict]:
+    """Search for similar chunks using cosine similarity, filtered by conversation.
+    
+    Args:
+        query_embedding: The embedding vector to search for
+        conversation_id: UUID of the conversation to search within
+        top_k: Number of results to return
+    
+    Returns:
+        List of dictionaries with chunk data and similarity scores
+    """
     conn = get_postgres_connection()
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     
@@ -58,10 +73,11 @@ def search_similar_chunks(query_embedding: List[float], top_k: int = TOP_K_RETRI
                 metadata,
                 1 - (embedding <=> %s::vector) as similarity
             FROM document_chunks
+            WHERE conversation_id = %s
             ORDER BY embedding <=> %s::vector
             LIMIT %s
             """,
-            (query_embedding, query_embedding, top_k)
+            (query_embedding, conversation_id, query_embedding, top_k)
         )
         
         results = cur.fetchall()

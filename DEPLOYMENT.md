@@ -38,13 +38,22 @@
 
 In Streamlit Cloud, add these secrets in **Settings > Secrets**:
 
+**Important:** Streamlit Cloud uses TOML format, not `.env` format. Use this format:
+
 ```toml
-[secrets]
-OPENAI_API_KEY = "sk-..."
+OPENAI_API_KEY = "sk-proj-..."
 SUPABASE_URL = "https://xxxxx.supabase.co"
 SUPABASE_KEY = "sb_publishable_..."
-DATABASE_URL = "postgresql://postgres.[ref]:[PASSWORD]@aws-0-[region].pooler.supabase.com:6543/postgres"
+DATABASE_URL = "postgresql://postgres.[ref]:[PASSWORD]@aws-0-[region].pooler.supabase.com:5432/postgres"
+OPENAI_MODEL = "gpt-4o-mini"
+EMBEDDING_MODEL = "text-embedding-3-small"
 ```
+
+**Note:** 
+- Remove the `[secrets]` header - Streamlit Cloud doesn't need it
+- All values must be in quotes
+- No comments (lines starting with `#`) in the secrets file
+- `SUPABASE_SERVICE_KEY` is optional - you can omit it if not needed
 
 **Important:**
 - Use the **Session Pooler** connection string for `DATABASE_URL` (not Direct connection)
