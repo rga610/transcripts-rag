@@ -9,6 +9,12 @@ langchain-community>=0.0.20
 langchain-text-splitters>=0.0.1
 langchain-core>=0.1.0
 
+# Document parsing
+markitdown[all]>=0.1.4
+
+# Vector storage
+qdrant-client>=1.16.2
+
 # PDF processing
 pypdf>=3.17.0
 

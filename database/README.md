@@ -68,8 +68,19 @@ supabase migration new your_migration_name
 
 ## Migration Files
 
+- `migrations/00000000000000_drop_all_tables.sql` - **⚠️ DANGER: Drops all tables** (use to reset database)
 - `migrations/20240101000000_initial_schema.sql` - Initial schema with tables and indexes
 - `migrations/20240110000000_add_conversation_to_chunks.sql` - Adds conversation_id to document_chunks for conversation isolation
+
+## Resetting the Database
+
+To completely reset the database (delete all data):
+
+1. Run `migrations/00000000000000_drop_all_tables.sql` in SQL Editor
+2. Then run `migrations/20240101000000_initial_schema.sql` to recreate tables
+3. Then run `migrations/20240110000000_add_conversation_to_chunks.sql` to add conversation support
+
+**⚠️ WARNING: This will delete ALL data permanently!**
 
 ## Schema Overview
 

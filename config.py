@@ -22,6 +22,11 @@ CHUNK_SIZE = 1000
 CHUNK_OVERLAP = 200
 TOP_K_RETRIEVAL = 8  # Increased to get more context for better accuracy
 
+# Qdrant configuration
+QDRANT_CLUSTER_ENDPOINT = os.getenv("QDRANT_CLUSTER_ENDPOINT")
+QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
+QDRANT_COLLECTION = os.getenv("QDRANT_COLLECTION", "sop_chunks")
+
 # File Upload Configuration
 MAX_FILE_SIZE_MB = 10
 ALLOWED_EXTENSIONS = [".pdf"]

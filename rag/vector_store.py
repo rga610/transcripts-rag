@@ -1,88 +1,141 @@
-"""Vector store operations for Supabase pgvector."""
-from db.connection import get_postgres_connection
-from typing import List, Dict
-import psycopg2.extras
-from config import TOP_K_RETRIEVAL
+"""Vector store operations powered by Qdrant Cloud."""
+
+import uuid
+from typing import Dict, List
+
+from config import (
+    QDRANT_API_KEY,
+    QDRANT_CLUSTER_ENDPOINT,
+    QDRANT_COLLECTION,
+    TOP_K_RETRIEVAL,
+)
+from qdrant_client import QdrantClient
+from qdrant_client.models import (
+    Distance,
+    FieldCondition,
+    Filter,
+    MatchValue,
+    PointStruct,
+    PayloadSchemaType,
+    VectorParams,
+)
+
+_client: QdrantClient | None = None
+
+
+def _ensure_qdrant_configured() -> None:
+    if not QDRANT_CLUSTER_ENDPOINT or not QDRANT_API_KEY:
+        raise RuntimeError(
+            "QDRANT_CLUSTER_ENDPOINT and QDRANT_API_KEY must be set to use the vector store."
+        )
+    if not QDRANT_COLLECTION:
+        raise RuntimeError("QDRANT_COLLECTION must be set to identify the collection to use.")
+
+
+def _get_qdrant_client() -> QdrantClient:
+    global _client
+    if _client is None:
+        _ensure_qdrant_configured()
+        _client = QdrantClient(
+            url=QDRANT_CLUSTER_ENDPOINT,
+            api_key=QDRANT_API_KEY,
+        )
+    return _client
+
+
+def _collection_exists(client: QdrantClient) -> bool:
+    response = client.get_collections()
+    return any(coll.name == QDRANT_COLLECTION for coll in response.collections)
+
+
+def _ensure_collection(client: QdrantClient, vector_size: int) -> None:
+    created = False
+    if not _collection_exists(client):
+        client.create_collection(
+            collection_name=QDRANT_COLLECTION,
+            vectors_config=VectorParams(size=vector_size, distance=Distance.COSINE),
+        )
+        created = True
+
+    # Ensure filterable index on conversation_id for fast query filters
+    try:
+        client.create_payload_index(
+            collection_name=QDRANT_COLLECTION,
+            field_name="conversation_id",
+            field_schema=PayloadSchemaType.KEYWORD,
+        )
+    except Exception:
+        # Index likely exists already; ignore
+        if created:
+            # If we just created the collection, re-raise unexpected errors
+            raise
 
 
 def store_document_chunks(chunks: List[Dict], conversation_id: str):
-    """Store document chunks with embeddings in Supabase, linked to a conversation.
-    
-    Args:
-        chunks: List of chunk dictionaries with embedding, chunk_text, etc.
-        conversation_id: UUID of the conversation these chunks belong to
-    """
-    conn = get_postgres_connection()
-    cur = conn.cursor()
-    
-    try:
-        for chunk_data in chunks:
-            # Convert embedding list to string format for pgvector: "[1,2,3,...]"
-            embedding = chunk_data["embedding"]
-            embedding_str = "[" + ",".join(str(float(x)) for x in embedding) + "]"
-            
-            # Convert metadata dict to JSONB format using psycopg2's Json adapter
-            metadata = chunk_data.get("metadata", {})
-            metadata_json = psycopg2.extras.Json(metadata) if isinstance(metadata, dict) else psycopg2.extras.Json({})
-            
-            cur.execute(
-                """
-                INSERT INTO document_chunks (filename, chunk_text, chunk_index, embedding, metadata, conversation_id)
-                VALUES (%s, %s, %s, %s::vector, %s, %s)
-                """,
-                (
-                    chunk_data["filename"],
-                    chunk_data["chunk_text"],
-                    chunk_data["chunk_index"],
-                    embedding_str,
-                    metadata_json,
-                    conversation_id
-                )
-            )
-        conn.commit()
-    except Exception as e:
-        conn.rollback()
-        raise e
-    finally:
-        cur.close()
-        conn.close()
+    """Store SOP chunks (metadata + embeddings) in Qdrant."""
+    if not chunks:
+        return
 
+    vector_size = len(chunks[0]["embedding"])
+    client = _get_qdrant_client()
+    _ensure_collection(client, vector_size)
 
-def search_similar_chunks(query_embedding: List[float], conversation_id: str, top_k: int = TOP_K_RETRIEVAL) -> List[Dict]:
-    """Search for similar chunks using cosine similarity, filtered by conversation.
-    
-    Args:
-        query_embedding: The embedding vector to search for
-        conversation_id: UUID of the conversation to search within
-        top_k: Number of results to return
-    
-    Returns:
-        List of dictionaries with chunk data and similarity scores
-    """
-    conn = get_postgres_connection()
-    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    
-    try:
-        cur.execute(
-            """
-            SELECT 
-                id,
-                filename,
-                chunk_text,
-                chunk_index,
-                metadata,
-                1 - (embedding <=> %s::vector) as similarity
-            FROM document_chunks
-            WHERE conversation_id = %s
-            ORDER BY embedding <=> %s::vector
-            LIMIT %s
-            """,
-            (query_embedding, conversation_id, query_embedding, top_k)
-        )
+    points = []
+    for chunk_data in chunks:
+        payload = dict(chunk_data["metadata"])
+        payload["chunk_text"] = chunk_data["chunk_text"]
+        payload["conversation_id"] = str(conversation_id)
+        payload["chunk_index"] = chunk_data["chunk_index"]
         
-        results = cur.fetchall()
-        return [dict(row) for row in results]
-    finally:
-        cur.close()
-        conn.close()
+        # Qdrant requires point IDs to be proper UUIDs or unsigned integers
+        point_id = str(uuid.uuid4())
+
+        point = PointStruct(
+            id=point_id,
+            vector=chunk_data["embedding"],
+            payload=payload,
+        )
+        points.append(point)
+
+    client.upsert(
+        collection_name=QDRANT_COLLECTION,
+        points=points,
+    )
+
+
+def search_similar_chunks(
+    query_embedding: List[float],
+    conversation_id: str,
+    top_k: int = TOP_K_RETRIEVAL,
+) -> List[Dict]:
+    """Retrieve the most similar SOP chunks for the supplied conversation."""
+    client = _get_qdrant_client()
+    filter_cond = Filter(
+        must=[
+            FieldCondition(
+                key="conversation_id",
+                match=MatchValue(value=str(conversation_id)),
+            )
+        ]
+    )
+
+    results = client.query_points(
+        collection_name=QDRANT_COLLECTION,
+        query=query_embedding,
+        limit=top_k,
+        with_payload=True,
+        query_filter=filter_cond,
+    )
+
+    formatted = []
+    for hit in results.points:
+        formatted.append(
+            {
+                "id": hit.id,
+                "chunk_text": hit.payload.get("chunk_text"),
+                "metadata": hit.payload,
+                "similarity": hit.score,
+            }
+        )
+    return formatted
 

@@ -1,4 +1,4 @@
-"""Main Streamlit application for Financial Call Transcript RAG Assistant."""
+"""Main Streamlit application for the SOP RAG Assistant."""
 import streamlit as st
 from rag.document_processor import process_pdf_file
 from rag.vector_store import store_document_chunks
@@ -9,8 +9,8 @@ import uuid
 
 # Page configuration
 st.set_page_config(
-    page_title="Financial Transcript RAG Assistant",
-    page_icon="📊",
+    page_title="SOP RAG Assistant",
+    page_icon="🧾",
     layout="wide"
 )
 
@@ -34,8 +34,8 @@ def start_new_conversation():
 
 
 def main():
-    st.title("📊 Financial Call Transcript RAG Assistant")
-    st.markdown("Upload earnings call transcripts (PDFs) and ask questions about management commentary, guidance, margins, and more.")
+    st.title("🧾 SOP RAG Assistant")
+    st.markdown("Upload SOP documents (PDFs) and ask structured, procedure-focused questions to get precise and accountable answers.")
     
     # Create conversation if it doesn't exist
     if st.session_state.conversation_id is None:
@@ -48,17 +48,17 @@ def main():
             start_new_conversation()
         
         st.markdown("---")
-        st.header("📁 Upload Transcripts")
+        st.header("📁 Upload SOPs")
         
         # Show current conversation info
         if st.session_state.conversation_id:
             st.caption(f"Conversation ID: {str(st.session_state.conversation_id)[:8]}...")
         
         uploaded_files = st.file_uploader(
-            "Choose PDF files",
+            "Choose SOP PDF files",
             type=["pdf"],
             accept_multiple_files=True,
-            help="Upload one or more earnings call transcript PDFs (max 10MB each). Files are linked to this conversation."
+            help="Upload one or more SOP PDFs (max 10MB each). Files are linked to this conversation."
         )
         
         if uploaded_files:
@@ -69,7 +69,7 @@ def main():
                 if st.session_state.conversation_id is None:
                     st.session_state.conversation_id = create_conversation()
                 
-                with st.spinner("Processing PDFs..."):
+                with st.spinner("Processing SOP PDFs..."):
                     for file in new_files:
                         try:
                             # Process PDF
@@ -98,7 +98,7 @@ def main():
             st.markdown(message["content"])
     
     # Chat input
-    if prompt := st.chat_input("Ask a question about the transcripts..."):
+    if prompt := st.chat_input("Ask a question about these SOPs..."):
         # Ensure we have a conversation_id
         if st.session_state.conversation_id is None:
             st.session_state.conversation_id = create_conversation()

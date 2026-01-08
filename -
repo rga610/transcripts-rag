@@ -1,0 +1,341 @@
+TECH GUARD SOLUTIONS
+
+TECHGUARDSOLUTIONS.COM
+123 Innovation Drive
+21 545 Los Angeles, California
+(555) 111 2345 000
+
+STANDARD OPERATING PROCEDURE
+
+Procedure Title
+
+Backup and Recovery
+
+Department
+
+Informational Technologies Department
+
+SOP ID
+
+Date
+
+IT-071-2024
+
+December 16, 2024
+
+Effective Date
+
+December 19, 2024
+
+Revision Number
+
+4
+
+Prepared By
+
+Emily Johnson / IT Specialist
+
+Reviewed By
+
+Michael Davis / IT Manager
+
+Approved By
+
+Sarah Miller / Chief Information Officer (CIO)
+
+© TemplateLab.com
+
+BACKUP AND RECOVERY
+
+SOP ID: IT-071-2024     |     Rev: 4     |     Date: 12/19/2024     |     IT Department     |     Page 2/6
+
+PURPOSE
+
+The purpose of this Standard Operating Procedure (SOP) is to
+establish a consistent and effective approach for performing data
+backup and recovery at Tech Guard Solutions. This SOP aims to
+safeguard critical data, ensure business continuity, and minimize
+data loss in case of an unexpected event.
+
+INTRODUCTION
+
+Data backup and recovery are crucial components of our IT
+infrastructure management. This SOP outlines the processes and
+procedures to be followed to ensure that data is backed up
+regularly, stored securely, and can be recovered quickly in the
+event of data loss, system failure, or cyber-attack.
+
+SCOPE
+
+This SOP applies to all employees, contractors, and third-party
+users at Tech Guard Solutions who are involved in data backup and
+recovery processes. It covers all company-owned and managed
+systems, databases, and applications that store or process critical
+business data.
+
+CHANGE HISTORY
+
+Regular revisions should be conducted every two years to ensure the SOP remains current and effective.
+
+Revision
+Number
+
+1
+
+2
+
+3
+
+4
+
+Date
+
+Description of Changes
+
+Prepared by
+
+10/17/2021
+
+Initial SOP. Included initial procedure
+set up.
+
+Gwen Morison
+
+12/22/2021
+
+Added encryption to backup storage
+procedures
+
+Emily Johnson
+
+12/19/2022
+
+Included definitions and
+responsibilities section
+
+Emily Johnson
+
+12/19/2024
+
+Updated backup retention period to
+90 days
+
+Emily Johnson
+
+BACKUP AND RECOVERY
+
+SOP ID: IT-071-2024     |     Rev: 4     |     Date: 12/19/2024     |     IT Department     |     Page 3/6
+
+DEFINITIONS AND RESPONSIBILITIES
+
+This section provides clear definitions of key terms used within this SOP and outlines the roles and
+responsibilities of personnel involved in the data backup and recovery process. Understanding
+these definitions and responsibilities ensures all parties are aligned and aware of their duties.
+
+DEFINITIONS
+
+Backup
+
+RESPONSIBILITIES
+
+IT Specialist
+
+The process of creating a copy of data to
+protect it against loss or corruption.
+
+Recovery
+
+The process of restoring data from a backup
+after data loss or corruption.
+
+Incremental Backup
+
+A backup that captures only the changes made
+since the last backup.
+
+Full Backup
+
+A complete copy of all data.
+
+Disaster Recovery Plan (DRP)
+
+A documented process or set of procedures to
+recover and protect a business IT infrastructure
+in the event of a disaster.
+
+Retention Period
+
+The duration for which backup data is kept
+before it is deleted or overwritten.
+
+Responsible for performing regular backups,
+monitoring backup processes, and initiating
+recovery procedures when necessary.
+
+Data Owner
+
+Responsible for ensuring that the data under
+their management is classified correctly, backed
+up according to the prescribed schedule, and
+accessible for recovery operations. They also
+coordinate with the IT department to address
+any issues or special requirements related to
+data backup and recovery.
+
+IT Manager
+
+Ensures compliance with the backup schedule,
+reviews backup logs, and oversees recovery
+testing.
+
+Chief Information Officer (CIO)
+
+Approves backup and recovery policies, and
+ensures adequate resources are allocated for
+backup infrastructure and processes.
+
+BACKUP AND RECOVERY
+
+SOP ID: IT-071-2024     |     Rev: 4     |     Date: 12/19/2024     |     IT Department     |     Page 4/6
+
+BACKUP SCHEDULING
+
+For backup scheduling, it is essential to perform a full backup of all critical data every Friday at
+10:00 PM. This ensures that a comprehensive copy of all data is created at the end of each week.
+Additionally, incremental backups should be performed daily at 10:00 PM. Incremental backups are
+efficient because they only capture changes made since the last backup, which helps save storage
+space and reduces backup time. By adhering to this schedule, the organization ensures that data is
+regularly updated and can be easily restored in the event of data loss. Consistent monitoring of the
+backup processes is necessary to confirm their successful completion. Any issues identified during
+the backup should be promptly addressed to maintain data integrity and availability. This
+structured approach to backup scheduling helps safeguard critical data and supports the overall
+data management strategy.
+
+BACKUP STORAGE
+
+Effective backup storage is vital for ensuring the security and availability of critical data. By storing
+backups in a secure, offsite location with encryption, organizations can protect against data loss
+due to physical damage, theft, or cyber-attacks. Regularly reviewing and updating backup storage
+practices helps maintain the integrity and accessibility of backup data. It is essential to follow a
+well-defined process for storing, managing, and verifying backups to ensure data can be recovered
+efficiently when needed. Here are the three crucial steps for backup storage:
+
+Secure Offsite Storage:
+
+▪  Store all backups in a secure, offsite facility to protect against physical damage and theft.
+
+Encryption:
+
+▪  Encrypt all backup data to prevent unauthorized access and ensure data privacy.
+
+Retention Period:
+
+▪  Define and adhere to a retention period for keeping backups, balancing storage costs with
+
+recovery needs.
+
+STEP 1
+
+STEP 2
+
+STEP3
+
+Secure Offsite Storage
+
+Encryption
+
+Retention Period
+
+BACKUP AND RECOVERY
+
+SOP ID: IT-071-2024     |     Rev: 4     |     Date: 12/19/2024     |     IT Department     |     Page 5/6
+
+RECOVERY PROCESS
+
+Efficient data recovery is crucial in minimizing the impact of data
+loss and ensuring business continuity. This process involves several
+key steps that must be executed promptly and accurately to
+restore data to its most recent state. The following guidelines
+outline the necessary actions for initiating recovery, restoring data,
+and verifying its integrity. Adherence to these procedures ensures
+that critical information is available and reliable when needed,
+maintaining the integrity of the organization's operations.
+
+INITIATE THE RECOVERY PROCESS
+
+Efficient data recovery is crucial in minimizing the impact of data
+loss and ensuring business continuity. This process involves several
+key steps that must be executed promptly and accurately to
+restore data to its most recent state. The following guidelines
+outline the necessary actions for initiating recovery, restoring data,
+and verifying its integrity. Adherence to these procedures ensures
+that critical information is available and reliable when needed,
+maintaining the integrity of the organization's operations.
+
+RESTORE DATA
+
+Restore data from the most recent full backup, followed by incremental backups as needed. This
+ensures that all data is recovered to its latest state before the loss event. Start with the full backup,
+which contains a complete copy of the data at a specific point in time. Next, apply the incremental
+backups sequentially to capture all subsequent changes. This layered approach ensures a
+comprehensive restoration, minimizing any potential data gaps.
+
+VERIFY DATA INTEGRITY
+
+Verify the integrity and completeness of the recovered data. After the restoration process, conduct
+thorough checks to ensure that all data has been accurately recovered. This includes validating file
+contents, data structures, and ensuring there are no discrepancies. Automated tools can assist in
+verifying data integrity, but manual checks are also important for critical files. Ensuring data
+integrity prevents issues in future operations. Regular audits and verification help in identifying any
+overlooked errors and confirm that the recovery process meets the organizational standards.
+
+BACKUP AND RECOVERY
+
+SOP ID: IT-071-2024     |     Rev: 4     |     Date: 12/19/2024     |     IT Department     |     Page 6/6
+
+Backup Monitoring and Reporting
+
+Effective backup monitoring and reporting are essential for ensuring the reliability and integrity of
+backup processes. Regular monitoring helps identify and address any issues promptly, while
+comprehensive reporting provides insights into the performance and success of backup operations.
+
+It is crucial to regularly review backup reports to ensure all data is correctly backed up and
+can be restored when needed.
+
+  Daily Monitoring
+
+Daily monitoring involves checking the backup logs and status reports to ensure
+that all scheduled backups have been completed successfully. This step helps
+identify any failures or issues that need immediate attention. By addressing
+problems daily, the risk of data loss is minimized, and the backup process
+remains reliable. It also helps in identifying patterns that might indicate deeper
+underlying issues.
+
+  Monthly Reports
+
+Monthly reports provide a comprehensive overview of the backup performance
+over a longer period. These reports should include details on backup success
+rates, any failures, and the resolution of those issues. Reviewing these reports
+allows for the identification of trends and potential improvements in the backup
+process. It ensures that the backup strategy remains effective and aligned with
+the organization's needs.
+
+Issue Resolution
+
+Promptly addressing any issues identified during monitoring is critical. This
+involves investigating the cause of any backup failures, implementing corrective
+actions, and verifying the success of these actions. Effective issue resolution
+ensures that backup processes remain uninterrupted and reliable. Continuous
+improvement through issue resolution helps in maintaining the integrity of the
+backup system.
+
+  Performance Analysis
+
+Analyzing the performance of the backup system involves evaluating the speed,
+efficiency, and reliability of backup processes. This analysis helps in identifying
+areas where the backup process can be optimized for better performance. By
+continuously analyzing and improving backup performance, organizations can
+ensure that their data is always protected and recoverable in a timely manner.
+Performance analysis is a key aspect of maintaining a robust data management
+strategy.
+
